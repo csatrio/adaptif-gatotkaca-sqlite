@@ -1,0 +1,5 @@
+# Python dependencies of the tests in this directory (all optional: a test whose module is missing skips with exit 77).
+# Install into a virtualenv under $HOME:  python3 -m venv ~/.venvs/sqlite-tests && ~/.venvs/sqlite-tests/bin/pip install -r tests/python/requirements.txt
+# The pyo3 shim itself is not a pip package: build it with scripts/build-pyshim.sh. test_sqlite_concurrency.py also needs the `wrk` binary on PATH.
+tortoise-orm>=1.1.9   # test_tortoise.py and sqlite/tortoise_sqlite.py (brings pypika-tortoise)
+aiosqlite>=0.22.1     # bench_vs_aiosqlite.py only (the comparison baseline)

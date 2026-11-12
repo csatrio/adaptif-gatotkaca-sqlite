@@ -1,0 +1,11 @@
+/target/
+/Cargo.lock
+.DS_Store
+__pycache__/
+*.py[cod]
+*.log
+.venv
+/tests/pyshim/target/
+/tests/pyshim/Cargo.lock
+/tests/python/_sqlite_engine*.so
+/tests/python/_sqlite_engine*.pyd

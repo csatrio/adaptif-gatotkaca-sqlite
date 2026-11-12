@@ -1,0 +1,5 @@
+# Scripts run on Linux, macOS and Windows checkouts alike: a CRLF shebang line does not execute.
+*.sh eol=lf
+*.py eol=lf
+*.pyi eol=lf
+*.pem eol=lf

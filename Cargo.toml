@@ -1,0 +1,109 @@
+[package]
+name = "adaptif-gatotkaca-sqlite"
+description = "SQLite engine: lock-free thread-local readers, one writer thread, session routing"
+version = "0.2.0"
+edition = "2024"
+rust-version = "1.89"
+authors = ["PT Adaptif Sinergi Dinamis"]
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+keywords = ["sqlite", "database", "lock-free", "async", "wal"]
+categories = ["database", "concurrency"]
+autotests = false
+# One crate on crates.io: the dev-only pyo3 shim (its own manifest), the Python tests and the repo tooling stay out of the package.
+exclude = ["/tests/pyshim/", "/tests/python/", "/scripts/", "/AGENTS.md", "/.gitattributes", "/.gitignore"]
+
+[dependencies]
+crossbeam-utils = "0.8.23"
+adaptif-gatotkaca-utils = "0.15.0"
+compact_str = "0.10.0"
+crossbeam-channel = { version = "0.5.17", optional = true }
+log = { version = "0.4.35", features = ["release_max_level_info"] }
+rusqlite = { version = "0.42.0", features = ["bundled"] }
+smallvec = "1.16.5"
+# Optional: run async reads on a tokio runtime's blocking pool (feature `tokio`).
+tokio = { version = "1.54.1", optional = true, default-features = false, features = ["rt"] }
+
+[features]
+# Writer queue backends. Treiber is the gatotkaca MPSC channel (the standard); crossbeam stays selectable.
+default = ["treiber-channel"]
+treiber-channel = []
+crossbeam-channel = ["dep:crossbeam-channel"]
+tokio = ["dep:tokio"]
+
+[dev-dependencies]
+tempfile = "3.27.0"
+crossbeam-channel = "0.5.17"
+# Comparison pools for tests/bench_read_path.rs only.
+affinitypool = "0.8.0"
+threadpool = "1.8.1"
+tokio = { version = "1.54.1", features = ["rt-multi-thread", "macros", "time"] }
+
+[lib]
+path = "lib.rs"
+
+[[test]]
+name = "sqlite_routing"
+path = "tests/test_sqlite_routing.rs"
+
+[[test]]
+name = "sqlite_bench_write_path"
+path = "tests/bench_write_path.rs"
+
+[[test]]
+name = "sqlite_api_surface"
+path = "tests/api_surface.rs"
+
+[[test]]
+name = "sqlite_features"
+path = "tests/test_sqlite_features.rs"
+
+[[test]]
+name = "sqlite_pragma"
+path = "tests/test_pragma.rs"
+
+[[test]]
+name = "sqlite_reply"
+path = "tests/test_reply.rs"
+
+[[test]]
+name = "sqlite_queue"
+path = "tests/test_queue.rs"
+
+[[test]]
+name = "sqlite_pool"
+path = "tests/test_pool.rs"
+
+[[test]]
+name = "sqlite_bench_vs_rusqlite"
+path = "tests/bench_vs_rusqlite.rs"
+
+[[test]]
+name = "sqlite_bench_read_path"
+path = "tests/bench_read_path.rs"
+
+# Copied from the root manifest of adaptif-gatotkaca @ 4f1fa176 (a path dependency's profiles are ignored by its consumer).
+[profile.dev]
+opt-level = 0
+debug = true
+incremental = true
+panic = "unwind"
+strip = "none"
+split-debuginfo = "unpacked"
+
+[profile.dev.package."*"]
+debug = false
+
+[profile.benchmark]
+inherits = "release"
+strip = "debuginfo"
+
+[profile.release]
+opt-level = 3
+debug = false
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+overflow-checks = false
+incremental = false
+strip = "symbols"

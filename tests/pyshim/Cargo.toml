@@ -1,0 +1,22 @@
+[package]
+name = "adaptif-gatotkaca-sqlite-pyshim"
+description = "Dev-only pyo3 test shim: exposes adaptif-gatotkaca-sqlite to the Python tests in ../python"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.89"
+publish = false
+
+# Separate root: the parent manifest must not become a workspace (see AGENTS.md).
+[workspace]
+
+[lib]
+name = "_sqlite_engine"
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+adaptif-gatotkaca-sqlite = { path = "../.." }
+pyo3 = { version = "0.30.1", features = ["extension-module"] }
+
+[build-dependencies]
+pyo3-build-config = "0.30.1"
